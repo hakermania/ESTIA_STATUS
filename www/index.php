@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta rel="author" content="Alex Solanos">
-		<title><?php echo $var; ?></title>
+		<title>FEP Servers status</title>
 	</head>
 	<body>
 
