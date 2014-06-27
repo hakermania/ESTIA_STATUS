@@ -22,7 +22,8 @@ pingTime=5m
 finalOutputDirectory="/var/www/status/"
 tempOutputDirectory="/tmp/serverStatus/"
 
-mkdir -p $tempOutputDirectory	
+mkdir -p $tempOutputDirectory
+mkdir -p $finalOutputDirectory
 
 while true; do
 
