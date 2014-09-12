@@ -46,13 +46,12 @@ $(document).ready(function(){
 	}
 
 	function newEntry(x, y, percentage, title){
-		//Thlefwneio
 		var oldWidth = context.lineWidth;
 		context.lineWidth = 1;
 		context.fillStyle=colorWithPercentage(percentage);
 		roundRect(context, x, y, entryWidth, entryHeight, 10, true, true);
 		context.font="20px Verdana";
-		context.fillStyle="000000";
+		context.fillStyle="#000000";
 		
 		context.fillText(title, x+entryWidth/2-context.measureText(title).width/2, y+40);
 		context.font="12px Courier";
