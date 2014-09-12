@@ -36,6 +36,6 @@
 			var c = '<?php echo $c; ?>';
 		</script>
         <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-		<script src="paint.js"></script>
+		<script src="paint.js" charset="utf-8"></script>
 	</body>
 </html>
