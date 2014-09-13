@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta rel="author" content="Alex Solanos">
-		<title>Κατάσταση Server Φ.Ε.Π.</title>
+		<title>Κατάσταση Δικτύου Φ.Ε.Π.</title>
 	</head>
 	<body>
 
