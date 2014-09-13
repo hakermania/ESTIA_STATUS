@@ -12,7 +12,7 @@
 				Τελευταία ενημέρωση: <?php echo date("d F Y H:i", filemtime($_SERVER["DOCUMENT_ROOT"]."/status/thl.txt")); ?> (Τοπική ώρα)
 			</h3>
 
-			<canvas id="network"></canvas>
+			<canvas id="networkCanvas"></canvas>
 		</center>
 
 		<script type="text/javascript">
