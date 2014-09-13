@@ -16,7 +16,7 @@
 		</center>
 
 		<script type="text/javascript">
-<?php
+			<?php
 				$thlefwneio=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/thl.txt"));
 				$omadaDiktyou=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/om.txt"));
 				$z=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/z.txt"));
@@ -35,7 +35,7 @@
 			var b = '<?php echo $b; ?>';
 			var c = '<?php echo $c; ?>';
 		</script>
-        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 		<script src="paint.js" charset="utf-8"></script>
 	</body>
 </html>

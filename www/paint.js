@@ -39,6 +39,8 @@ $(document).ready(function(){
 		// Clear the canvas
 		context.clearRect(0, 0, canvas.width, canvas.height);
 
+		// Draw the entries and if mouse is above one, make sure to keep its id
+
 		entryLabelId=-1;
 
 		for(i=0; i < entries.length; i++){
@@ -47,6 +49,8 @@ $(document).ready(function(){
 				entryLabelId=i;
 			}
 		}
+
+		// Draw the lines between the entries
 
 		drawConnection(entries[0], entries[1]);
 
@@ -62,8 +66,9 @@ $(document).ready(function(){
 
 		drawConnection(entries[5], entries[7]);
 
+		// Label has to be drawn last (in order to be above everything else)
+
 		if(entryLabelId!=-1){
-			//label has to be painted last.
 			drawLabel(mousePos.x, mousePos.y, entries[entryLabelId].ip);
 		}
 
@@ -129,8 +134,8 @@ $(document).ready(function(){
 	}
 
 	function Entry(x, y, percentage, title, ip){
-		this.width=150;
-		this.height=100;
+		this.width=width;
+		this.height=height;
 		this.x=x;
 		this.y=y;
 		this.percentage=percentage;
