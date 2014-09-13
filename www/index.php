@@ -16,16 +16,16 @@
 		</center>
 
 		<script type="text/javascript">
-			<?php
-				$thlefwneio=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/thl.txt"));
-				$omadaDiktyou=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/om.txt"));
-				$z=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/z.txt"));
-				$h=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/h.txt"));
-				$th=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/th.txt"));
-				$a=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/a.txt"));
-				$b=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/b.txt"));
-				$c=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/c.txt"));
-			?>
+<?php
+	$thlefwneio=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/thl.txt"));
+	$omadaDiktyou=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/om.txt"));
+	$z=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/z.txt"));
+	$h=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/h.txt"));
+	$th=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/th.txt"));
+	$a=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/a.txt"));
+	$b=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/b.txt"));
+	$c=str_replace(array("\r", "\n"), "", file_get_contents($_SERVER["DOCUMENT_ROOT"]."/status/c.txt"));
+?>
 			var thlefwneio = '<?php echo $thlefwneio; ?>';
 			var omadaDiktyou = '<?php echo $omadaDiktyou; ?>';
 			var z = '<?php echo $z ?>';
