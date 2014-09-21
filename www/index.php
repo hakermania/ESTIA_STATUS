@@ -37,5 +37,13 @@
 		</script>
 		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 		<script src="paint.js" charset="utf-8"></script>
+		<p>
+			Σημειώστε ότι η κατάσταση του άνω δικτύου είναι όπως φαίνεται από το κτήριο Η. Συνεπώς, αν π.χ. ο server στα B έχει πρόβλημα, τότε
+			θα υπάρχει υψηλό packet loss και στα Α και στα Γ. Αντίστοιχα, αν ο ίδιος ο server των Η έχει πρόβλημα, τότε θα υπάρχει packet loss
+			προς όλους.
+		</p>
+		<p>
+			Best viewed with <a href="https://www.google.com/chrome/browser/" target="_blank">Google Chrome</a>.
+		</p>
 	</body>
 </html>

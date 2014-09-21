@@ -44,8 +44,6 @@ $(document).ready(function(){
 
 	var render = function() {
 
-		console.log("LOOPING");
-
 		var now = new Date().getTime(),
 		dt = now - (time || now);
 
@@ -76,7 +74,7 @@ $(document).ready(function(){
 
 		context.fillStyle=pingFill;
 
-		for(i=0; i<pings.length; i++){
+		for(i=pings.length-1; i>=0; i--){
 			if(pings[i].delay>0){
 				pings[i].delay-=dt;
 				continue;
@@ -85,18 +83,35 @@ $(document).ready(function(){
 			context.arc(pings[i].paths[0].xc, pings[i].paths[0].yc, pings[i].radius, 0, 2*Math.PI);
 			context.closePath();
 			context.fill();
-			pings[i].paths[0].xc+=pings[i].paths[0].xadd;
-			pings[i].paths[0].yc+=pings[i].paths[0].yadd;
-			if(Math.abs(pings[i].paths[0].xc-pings[i].paths[0].xf)<=Math.abs(pings[i].paths[0].xadd)
-				&&
-				Math.abs(pings[i].paths[0].yc-pings[i].paths[0].yf)<=Math.abs(pings[i].paths[0].yadd)
-				){
+			pings[i].paths[0].xc+=pings[i].paths[0].xadd*dt*0.05;
+			pings[i].paths[0].yc+=pings[i].paths[0].yadd*dt*0.05;
+			var animationPathEnded=false;
+			if(pings[i].paths[0].xadd>0){
+				if(pings[i].paths[0].xc>pings[i].paths[0].xf){
+					animationPathEnded=true;
+				}
+			}
+			else if(pings[i].paths[0].xadd<0){
+				if(pings[i].paths[0].xc<pings[i].paths[0].xf){
+					animationPathEnded=true;
+				}
+			}
+			else if(pings[i].paths[0].yadd>0){
+				if(pings[i].paths[0].yc>pings[i].paths[0].yf){
+					animationPathEnded=true;
+				}
+			}
+			else if(pings[i].paths[0].yadd<0){
+				if(pings[i].paths[0].yc<pings[i].paths[0].yf){
+					animationPathEnded=true;
+				}
+			}
+			if(animationPathEnded){
 				//animation has come to an end.
 				console.log("ANIMATION ENDED");
 				pings[i].paths.splice(0, 1);
 				if(pings[i].paths.length==0){
 					console.log("PING HAS TO BE REMOVED");
-					pings.push(pingWithPath(pings[i].path, 0));
 					pings.splice(i, 1);
 					i--;
 				}
@@ -206,7 +221,6 @@ $(document).ready(function(){
 		this.radius=radius;
 		this.delay=startingDelay;
 		this.paths=[];
-		this.path="";
 	}
 
 	Ping.prototype.addPath = function(a, b, c, d){
@@ -343,9 +357,20 @@ $(document).ready(function(){
 			ping.addPath(entries[7].x+entries[7].width/2, entries[5].y+entries[5].height/2, entries[7].x+entries[7].width/2, entries[7].y+entries[7].height/2)
 		}
 
-		ping.path=path;
-
 		return ping;
+	}
+
+	function launchPings(){
+		for(i=0;i<3;i++){
+			if(i==0)
+				pings.push(pingWithPath("ot", 0));
+			pings.push(pingWithPath("ob", i*200));
+			pings.push(pingWithPath("ba", i*200));
+			pings.push(pingWithPath("bc", i*200));
+			pings.push(pingWithPath("ho", i*200));
+			pings.push(pingWithPath("hz", i*200));
+			pings.push(pingWithPath("h8", i*200));
+		}
 	}
 
 	context.lineJoin = 'round';
@@ -366,16 +391,7 @@ $(document).ready(function(){
 
 	entries.push(new Entry(8*canvas.width/9-width/2, 4.5*height, th, "Θ", "150.140.217.126"));
 
-	for(i=0;i<4;i++){
-		if(i==0)
-			pings.push(pingWithPath("ot", 0));
-		pings.push(pingWithPath("ob", i*200));
-		pings.push(pingWithPath("ba", i*200));
-		pings.push(pingWithPath("bc", i*200));
-		pings.push(pingWithPath("ho", i*200));
-		pings.push(pingWithPath("hz", i*200));
-		pings.push(pingWithPath("h8", i*200));
-	}
+	setInterval(launchPings, 1000);
 
 	render();
 
