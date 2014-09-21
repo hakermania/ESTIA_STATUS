@@ -5,12 +5,17 @@ $(document).ready(function(){
 	canvas.height = 600;
 
 	labelFill="#f5da43";
+	pingFill="#d8d525";
 
 	var width=150; //all entries have set width and height
 	var height=100;
 
+	var pingRadius=5;
+
 	var context = canvas.getContext("2d");
+
 	var entries = [];
+	var pings = [];
 
 	var mousePos = {
 		x : 0,
@@ -35,20 +40,18 @@ $(document).ready(function(){
 			return setTimeout(callback, 1);
 		};
 
+	var time;
+
 	var render = function() {
+
+		console.log("LOOPING");
+
+		var now = new Date().getTime(),
+		dt = now - (time || now);
+
+		time = now;
 		// Clear the canvas
 		context.clearRect(0, 0, canvas.width, canvas.height);
-
-		// Draw the entries and if mouse is above one, make sure to keep its id
-
-		entryLabelId=-1;
-
-		for(i=0; i < entries.length; i++){
-			drawEntry(entries[i]);
-			if(entryLabelId==-1 && entries[i].underCursor()){
-				entryLabelId=i;
-			}
-		}
 
 		// Draw the lines between the entries
 
@@ -66,9 +69,57 @@ $(document).ready(function(){
 
 		drawConnection(entries[5], entries[7]);
 
+		// Draw the pings. These have to be above the lines, below the entries
+
+		var oldWidth = context.lineWidth;
+		context.lineWidth = 2;
+
+		context.fillStyle=pingFill;
+
+		for(i=0; i<pings.length; i++){
+			if(pings[i].delay>0){
+				pings[i].delay-=dt;
+				continue;
+			}
+			context.beginPath();
+			context.arc(pings[i].paths[0].xc, pings[i].paths[0].yc, pings[i].radius, 0, 2*Math.PI);
+			context.closePath();
+			context.fill();
+			pings[i].paths[0].xc+=pings[i].paths[0].xadd;
+			pings[i].paths[0].yc+=pings[i].paths[0].yadd;
+			if(Math.abs(pings[i].paths[0].xc-pings[i].paths[0].xf)<=Math.abs(pings[i].paths[0].xadd)
+				&&
+				Math.abs(pings[i].paths[0].yc-pings[i].paths[0].yf)<=Math.abs(pings[i].paths[0].yadd)
+				){
+				//animation has come to an end.
+				console.log("ANIMATION ENDED");
+				pings[i].paths.splice(0, 1);
+				if(pings[i].paths.length==0){
+					console.log("PING HAS TO BE REMOVED");
+					pings.push(pingWithPath(pings[i].path, 0));
+					pings.splice(i, 1);
+					i--;
+				}
+			}
+		}
+
+		context.lineWidth = oldWidth;
+
+		// Draw the entries and if mouse is above one, make sure to keep its id
+
+		entryLabelId=-1;
+
+		for(i=0; i < entries.length; i++){
+			drawEntry(entries[i]);
+			if(entryLabelId==-1 && entries[i].underCursor()){
+				entryLabelId=i;
+			}
+		}
+
 		// Label has to be drawn last (in order to be above everything else)
 
 		if(entryLabelId!=-1){
+			//this means that the mouse is above an entry, so the label has to be drawn
 			drawLabel(mousePos.x, mousePos.y, entries[entryLabelId].ip);
 		}
 
@@ -133,7 +184,7 @@ $(document).ready(function(){
 		context.stroke();
 	}
 
-	function Entry(x, y, percentage, title, ip){
+	function Entry(x, y, percentage, title, ip, comment){
 		this.width=width;
 		this.height=height;
 		this.x=x;
@@ -141,10 +192,49 @@ $(document).ready(function(){
 		this.percentage=percentage;
 		this.title=title;
 		this.ip=ip;
+		if(typeof(comment)==='undefined')
+			this.comment="";
+		else
+			this.comment=comment;
 	}
 
 	Entry.prototype.underCursor = function(){
 		return mousePos.x < this.x+this.width && mousePos.x > this.x && mousePos.y < this.y+this.height && mousePos.y > this.y;
+	}
+
+	function Ping(radius, startingDelay){
+		this.radius=radius;
+		this.delay=startingDelay;
+		this.paths=[];
+		this.path="";
+	}
+
+	Ping.prototype.addPath = function(a, b, c, d){
+
+		xadd1=0;
+		yadd1=0;
+
+		if((a-c)==0 && (b-d)==0){
+			xadd1=0;
+			yadd1=0;
+		}
+		else if((a-c)==0){
+			xadd1=0;
+			yadd1 = (d - b)*0.03;
+		}
+		else if ((b-d)==0){
+			xadd1 = (c - a)*0.03;
+			yadd1=0;
+		}
+		else
+		{
+			xadd1 = (c - a)*0.03/Math.abs(b-d);
+			yadd1 = xadd1*(d - b)/(c-a);
+		}
+
+		console.log("Pushing a path!");
+
+		this.paths.push({xadd: xadd1, yadd: yadd1, xc: a, yc: b, xf: c, yf: d});
 	}
 
 	function colorWithPercentage(percentage){
@@ -200,7 +290,11 @@ $(document).ready(function(){
 		context.fillText(entry.title, entry.x+entry.width/2-context.measureText(entry.title).width/2, entry.y+40);
 		context.font="12px Courier";
 		context.fillText(entry.percentage+"% packet loss", entry.x+entry.width/2-context.measureText(entry.percentage+"% packet loss").width/2, entry.y+60);
-
+		if(entry.comment!=""){
+			context.font="10px Verdana";
+			context.fillStyle="#FF0000";
+			context.fillText(entry.comment, entry.x+entry.width/2-context.measureText(entry.comment).width/2, entry.y+90);
+		}
 		context.lineWidth=oldWidth;
 	}
 
@@ -218,6 +312,42 @@ $(document).ready(function(){
 		context.lineWidth-oldWidth;
 	}
 
+	function pingWithPath(path, delay){
+		var ping = new Ping(pingRadius, delay);
+
+		if(path == "ot"){
+			ping.addPath(canvas.width/2, 1.5*height+2*pingRadius, canvas.width/2, height-2*pingRadius);
+		}
+		else if(path == "ob"){
+			ping.addPath(entries[1].x, entries[1].y+entries[1].height/2, entries[2].x+entries[2].width/2, entries[1].y+entries[1].height/2);
+			ping.addPath(entries[2].x+entries[2].width/2, entries[1].y+entries[1].height/2, entries[2].x+entries[2].width/2, entries[2].y+height/2);
+		}
+		else if(path == "ho"){
+			ping.addPath(entries[5].x+entries[5].width/2, entries[5].y+2*pingRadius, entries[5].x+entries[5].width/2, entries[1].y+height/2);
+			ping.addPath(entries[5].x+entries[5].width/2, entries[1].y+height/2, entries[1].x+entries[1].width-2*pingRadius, entries[1].y+height/2);
+		}
+		else if(path == "ba"){
+			ping.addPath(entries[2].x+entries[2].width/2, entries[2].y+entries[2].height/2, entries[3].x+entries[3].width/2, entries[2].y+entries[2].height/2);
+			ping.addPath(entries[3].x+entries[3].width/2, entries[2].y+entries[2].height/2, entries[3].x+entries[3].width/2, entries[3].y+entries[3].height/2)
+		}
+		else if(path == "bc"){
+			ping.addPath(entries[2].x+entries[2].width/2, entries[2].y+entries[2].height/2, entries[4].x+entries[4].width/2, entries[2].y+entries[2].height/2);
+			ping.addPath(entries[4].x+entries[4].width/2, entries[2].y+entries[2].height/2, entries[4].x+entries[4].width/2, entries[4].y+entries[4].height/2)
+		}
+		else if(path == "hz"){
+			ping.addPath(entries[5].x+entries[2].width/2, entries[5].y+entries[5].height/2, entries[6].x+entries[6].width/2, entries[5].y+entries[5].height/2);
+			ping.addPath(entries[6].x+entries[6].width/2, entries[5].y+entries[5].height/2, entries[6].x+entries[6].width/2, entries[6].y+entries[6].height/2)	
+		}
+		else if(path == "h8"){
+			ping.addPath(entries[5].x+entries[5].width/2, entries[5].y+entries[5].height/2, entries[7].x+entries[7].width/2, entries[5].y+entries[5].height/2);
+			ping.addPath(entries[7].x+entries[7].width/2, entries[5].y+entries[5].height/2, entries[7].x+entries[7].width/2, entries[7].y+entries[7].height/2)
+		}
+
+		ping.path=path;
+
+		return ping;
+	}
+
 	context.lineJoin = 'round';
 
 	entries.push(new Entry(canvas.width/2-width/2, 0, thlefwneio, "Τηλεφωνείο", "150.140.208.65"));
@@ -230,11 +360,22 @@ $(document).ready(function(){
 
 	entries.push(new Entry(canvas.width/2-canvas.width/9-width/2, 4.5*height, c, "Γ", "150.140.212.126"));
 
-	entries.push(new Entry(3*canvas.width/4-width/2, 3*height, h, "H", "150.140.216.126"));
+	entries.push(new Entry(3*canvas.width/4-width/2, 3*height, h, "H", "150.140.216.126", "(PING SOURCE)"));
 
 	entries.push(new Entry(3*canvas.width/2-8*canvas.width/9-width/2, 4.5*height, z, "Z", "150.140.215.126"));
 
 	entries.push(new Entry(8*canvas.width/9-width/2, 4.5*height, th, "Θ", "150.140.217.126"));
+
+	for(i=0;i<4;i++){
+		if(i==0)
+			pings.push(pingWithPath("ot", 0));
+		pings.push(pingWithPath("ob", i*200));
+		pings.push(pingWithPath("ba", i*200));
+		pings.push(pingWithPath("bc", i*200));
+		pings.push(pingWithPath("ho", i*200));
+		pings.push(pingWithPath("hz", i*200));
+		pings.push(pingWithPath("h8", i*200));
+	}
 
 	render();
 
