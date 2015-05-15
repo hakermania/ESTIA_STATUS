@@ -43,7 +43,7 @@
 		<p>
 			Best viewed with <a href="https://www.google.com/chrome/browser/" target="_blank">Google Chrome</a>.
 		</p>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<script src="jquery.min.js"></script>
 		<script src="paint.js" charset="utf-8"></script>
 	</body>
 </html>
